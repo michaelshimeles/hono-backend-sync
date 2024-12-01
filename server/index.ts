@@ -4,7 +4,7 @@ import { drizzle } from "drizzle-orm/neon-serverless";
 import { Hono } from "hono";
 import { Webhook } from "svix";
 import { items, users } from "./db/schema";
-import { serveStatic } from 'hono/bun'
+import { cors } from "hono/cors";
 
 const app = new Hono();
 
@@ -35,6 +35,14 @@ const app = new Hono();
 //     return c.json({ error: "Internal Server Error" }, 500);
 //   }
 // })
+
+app.use(
+  "/api/*",
+  cors({
+    origin: "https://react-local-production.up.railway.app",
+    allowMethods: ["POST", "GET"],
+  })
+);
 
 const apiRoutes = app
   .basePath("/api")
@@ -305,8 +313,6 @@ const userUpdate = async ({
     };
   }
 };
-
-app.use('*', serveStatic({ root: '../frontend/dist' }))
 
 export type AppType = typeof apiRoutes;
 
